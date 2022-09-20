@@ -47,7 +47,7 @@ class Player{
     draw(context){
         context.imageSmoothingEnabled = false;
         context.fillStyle = 'red';
-        context.fillRect(this.x, this.y, this.sWidth, this.sHeight);
+        //context.fillRect(this.x, this.y, this.sWidth, this.sHeight);
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, this.x, this.y,
             this.sWidth, this.sHeight);
     }
@@ -78,9 +78,23 @@ class Player{
 
         if(!this.onGround()){
             this.jumpV += this.gravity;
+            if(this.jumpV < 0){
+                this.frameX = 0;
+                this.frameY = 2;
+            }
+            else if(this.jumpV == 0){
+                this.frameX = 1;
+                this.frameY = 2;
+            }
+            else{
+                this.frameX = 2;
+                this.frameY = 2;
+            }
         }
         else{
             this.jumpV = 0;
+            this.frameX = 0;
+            this.frameY = 0;
         }
 
         if(this.y >= this.gameHeight - this.sHeight){
@@ -93,7 +107,28 @@ class Player{
 }
 
 class Background{
-
+    constructor(gameWidth, gameHeight){
+        this.gameWidth = gameWidth;
+        this.gameHeight = gameHeight;
+        this.image = document.getElementById('backgroundImage');
+        this.x = 0;
+        this.y = 0;
+        this.width = 144;
+        this.height = 69;
+        this.sWidth = gameWidth;
+        this.sHeight = gameHeight;
+        this.speed = 5;
+    }
+    draw(context){
+        context.drawImage(this.image, this.x, this.y, this.sWidth, this.sHeight);
+        context.drawImage(this.image, this.x + this.sWidth, this.y, this.sWidth, this.sHeight);
+    }
+    update(){
+        this.x -= this.speed;
+        if(this.x < 0 - this.sWidth){
+            this.x = 0;
+        }
+    }
 }
 
 class Enemy{
@@ -110,11 +145,14 @@ function displayStatusText(){
 
 const input = new InputHandler();
 const player = new Player(mainCanvas.width, mainCanvas.height);
+const background = new Background(mainCanvas.width, mainCanvas.height);
 
 
 
 function animate(){
     ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+    background.draw(ctx);
+    //background.update();
     player.draw(ctx);
     player.update(input);
     requestAnimationFrame(animate);

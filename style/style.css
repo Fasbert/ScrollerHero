@@ -11,7 +11,7 @@ body{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border: 5px solid white;
+    border: 5px solid rgb(185, 100, 20);
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
