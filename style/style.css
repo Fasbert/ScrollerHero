@@ -12,6 +12,8 @@ body{
     left: 50%;
     transform: translate(-50%, -50%);
     border: 5px solid white;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 #playerImage, #backgroundImage, #lumbertImage{
     display: none;
