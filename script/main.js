@@ -37,23 +37,41 @@ class Player{
         this.sWidth = 144; //stretched width - what user can see
         this.sHeight = 144; //stretched height - what user can see
         this.x = 100;
-        this.y = this.gameHeight - this.sWidth;
+        this.y = this.gameHeight - this.sHeight;
         this.image = document.getElementById('playerImage');
         this.frameX = 0;
         this.frameY = 0;
+        this.maxFrame = 9; //Sprites in animation counted from 0  
+        this.fps = 18;
+        this.frameTimer = 0;
+        this.frameInterval = 1000 / this.fps;
+        this.horizontalSpeed = 7;
         this.speed = 0;
-        this.horizontalSpeed = 6;
         this.jumpV = 0;
         this.gravity = 1;
     }
     draw(context){
         context.imageSmoothingEnabled = false;
-        context.fillStyle = 'red';
-        //context.fillRect(this.x, this.y, this.sWidth, this.sHeight);
-        context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, this.x, this.y,
-            this.sWidth, this.sHeight);
+        context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
+            this.x, this.y, this.sWidth, this.sHeight);
     }
-    update(input){
+    update(input, deltaTime){
+        //Animation
+        if(this.frameTimer > this.frameInterval){
+            if(this.frameX >= this.maxFrame){
+                this.frameX = 0;
+            }
+            else{
+                this.frameX++;
+            }
+            this.frameTimer = 0;
+        }
+        else{
+            this.frameTimer += deltaTime;
+        }
+        
+        console.log(this.frameX, this.frameY);
+        //Controls
         if(input.keys.indexOf('ArrowRight') > -1){
             this.speed = this.horizontalSpeed;
         }
@@ -61,7 +79,7 @@ class Player{
             this.speed = -this.horizontalSpeed;
         }
         else if(input.keys.indexOf('ArrowUp') > -1 && this.onGround()){
-            this.jumpV -= 20;
+            this.jumpV -= 21;
         }
         else{
             this.speed = 0;
@@ -80,25 +98,25 @@ class Player{
 
         if(!this.onGround()){
             this.jumpV += this.gravity;
+            this.maxFrame = 2;
+            this.frameY = 1;
+            //Fine jump animation
             if(this.jumpV < 0){
                 this.frameX = 0;
-                this.frameY = 2;
             }
             else if(this.jumpV == 0){
                 this.frameX = 1;
-                this.frameY = 2;
             }
             else{
                 this.frameX = 2;
-                this.frameY = 2;
             }
         }
         else{
             this.jumpV = 0;
-            this.frameX = 0;
+            this.maxFrame = 9;
             this.frameY = 0;
         }
-
+        
         if(this.y >= this.gameHeight - this.sHeight){
             this.y = this.gameHeight - this.sHeight;
         }
@@ -119,7 +137,7 @@ class Background{
         this.height = 69;
         this.sWidth = gameWidth;
         this.sHeight = gameHeight;
-        this.speed = 5;
+        this.speed = 3;
     }
     draw(context){
         context.drawImage(this.image, this.x, this.y, this.sWidth, this.sHeight);
@@ -146,12 +164,31 @@ class Enemy{
         this.y = this.gameHeight - this.sHeight;
         this.frameX = 0;
         this.frameY = 1;
-        this.speed = 5;
+        this.maxFrame = 3; //sprites count - 1
+        this.fps = 15;
+        this.frameTimer = 0;
+        this.frameInterval = 1000 / this.fps;
+        this.speed = 6;
     }
     draw(context){
-        context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, this.x, this.y, this.sWidth, this.sHeight)
+        context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
+            this.x, this.y, this.sWidth, this.sHeight);
     }
-    update(){
+    update(deltaTime){
+        if(this.frameTimer > this.frameInterval){
+            if(this.frameX >= this.maxFrame){
+                this.frameX = 0;
+            }
+            else{
+                this.frameX++;
+            }
+
+            this.frameTimer = 0;
+        }
+        else{
+            this.frameTimer += deltaTime;
+        }
+
         this.x -= this.speed; 
     }
 }
@@ -167,7 +204,7 @@ function enemyHandler(deltaTime){
 
     enemies.forEach(enemy => {
         enemy.draw(ctx);
-        enemy.update();
+        enemy.update(deltaTime);
     })
 }
 
@@ -182,16 +219,16 @@ const background = new Background(mainCanvas.width, mainCanvas.height);
 let lastTime = 0;
 let enemyTimer = 0;
 let enemyInterval = 1000; //spawn interval in mseconds
-let randomEnemyInterval = Math.random() * 1000 + 500;
+let randomEnemyInterval = Math.random() * 1000 + 1000;
 
 function animate(timeStamp){
     const deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
     ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
     background.draw(ctx);
-    //background.update();
+    background.update();
     player.draw(ctx);
-    player.update(input);
+    player.update(input, deltaTime);
     enemyHandler(deltaTime);
     requestAnimationFrame(animate);
 }
