@@ -15,6 +15,6 @@ body{
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
-#playerImage, #backgroundImage, #lumbertImage{
+#playerImage, #backgroundImage, #boarImage, #lumbertImage{
     display: none;
 }
