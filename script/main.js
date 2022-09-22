@@ -3,6 +3,7 @@ window.addEventListener('load', function(){
     const ctx = mainCanvas.getContext('2d');
     mainCanvas.width = 1280;
     mainCanvas.height = 720;
+    let score = 0;
     let enemies = [];
 
 class InputHandler{
@@ -69,8 +70,7 @@ class Player{
         else{
             this.frameTimer += deltaTime;
         }
-        
-        console.log(this.frameX, this.frameY);
+
         //Controls
         if(input.keys.indexOf('ArrowRight') > -1){
             this.speed = this.horizontalSpeed;
@@ -169,6 +169,7 @@ class Enemy{
         this.frameTimer = 0;
         this.frameInterval = 1000 / this.fps;
         this.speed = 6;
+        this.markedForDeletion = false;
     }
     draw(context){
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
@@ -190,12 +191,17 @@ class Enemy{
         }
 
         this.x -= this.speed; 
+        if(this.x < 0  - this.sWidth){
+            this.markedForDeletion = true;
+            score++;
+        }
     }
 }
 
 function enemyHandler(deltaTime){
     if(enemyTimer > enemyInterval + randomEnemyInterval){
         enemies.push(new Enemy(mainCanvas.width, mainCanvas.height));
+        console.log(enemies);
         enemyTimer = 0;
     }
     else{
@@ -205,11 +211,15 @@ function enemyHandler(deltaTime){
     enemies.forEach(enemy => {
         enemy.draw(ctx);
         enemy.update(deltaTime);
-    })
+    });
+    enemies = enemies.filter(enemy => !enemy.markedForDeletion);
 }
 
-function displayStatusText(){
-
+function displayStatusText(context){
+    context.globalAlpha = 0.55;
+    context.fillStyle = '#111111';
+    context.font = 'italic 24px Calibri';
+    context.fillText = ('Score: ' + score, 20, 50);
 }
 
 const input = new InputHandler();
@@ -230,7 +240,9 @@ function animate(timeStamp){
     player.draw(ctx);
     player.update(input, deltaTime);
     enemyHandler(deltaTime);
+    displayStatusText(ctx);
     requestAnimationFrame(animate);
 }
 animate(0);
+
 });
