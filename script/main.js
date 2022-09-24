@@ -2,16 +2,23 @@ window.addEventListener('load', function(){
     const mainCanvas = this.document.getElementById("mainCanvas");
     const ctx = mainCanvas.getContext("2d");
     mainCanvas.width = 1280;
-    mainCanvas.height = 720;
+    mainCanvas.height = 720;    
     let score = 0;
     let enemies = [];
     let gameOver = false;
+
+    //Sounds
+    const jumpSound = new Audio('../sounds/8bit-jump.mp3');
+    const goSound = new Audio('../sounds/goSound.wav');
+    const bgMusic = this.document.getElementById('bgMusic');
+    bgMusic.volume = 0.5;
     
 class InputHandler{
     constructor(){
         this.keys = [];
         window.addEventListener('keydown', e => {
             if((e.key === 'ArrowDown' ||
+                e.key === ' ' ||
                 e.key === 'ArrowUp' ||
                 e.key === 'ArrowLeft' ||
                 e.key === 'ArrowRight')
@@ -21,6 +28,7 @@ class InputHandler{
         });
         window.addEventListener('keyup', e => {
             if(e.key === 'ArrowDown' ||
+                e.key === ' ' ||
                 e.key === 'ArrowUp' ||
                 e.key === 'ArrowLeft' ||
                 e.key === 'ArrowRight'){
@@ -47,7 +55,7 @@ class Player{
         this.fps = 18;
         this.frameTimer = 0;
         this.frameInterval = 1000 / this.fps;
-        this.horizontalSpeed = 7;
+        this.horizontalSpeed = 9;
         this.speed = 0;
         this.jumpV = 0;
         this.gravity = 1;
@@ -67,10 +75,12 @@ class Player{
         //Collision detection 
         enemies.forEach(enemy => {
             const dx = (enemy.x + enemy.sWidth/2) - (this.x + this.sWidth/2);
-            const dy = (enemy.y + enemy.height/2) - (this.y + this.height/2);
+            const dy = (enemy.y + enemy.sHeight) - (this.y + this.sHeight/2);
             const distance = Math.sqrt(dx * dx + dy * dy);
             if(distance < enemy.sWidth/2 + this.sWidth/2){
                 gameOver = true;
+                bgMusic.pause();
+                goSound.play();
             }
         });
         //Animation
@@ -94,8 +104,13 @@ class Player{
         else if(input.keys.indexOf('ArrowLeft') > -1){
             this.speed = -this.horizontalSpeed;
         }
-        else if(input.keys.indexOf('ArrowUp') > -1 && this.onGround()){
+        else if(input.keys.indexOf('ArrowUp')  > -1 && this.onGround()){
             this.jumpV -= 21;
+            jumpSound.play();
+        }
+        else if(input.keys.indexOf(' ')  > -1 && this.onGround()){
+            this.jumpV -= 21;
+            jumpSound.play();
         }
         else{
             this.speed = 0;
@@ -163,6 +178,7 @@ class Background{
         this.x -= this.speed;
         if(this.x < 0 - this.sWidth){
             this.x = 0;
+            this.speed += 0.1;
         }
     }
 }
@@ -184,13 +200,13 @@ class Enemy{
         this.fps = 15;
         this.frameTimer = 0;
         this.frameInterval = 1000 / this.fps;
-        this.speed = 6;
+        this.speed = Math.random() * (11 - 7) + 7;
         this.markedForDeletion = false;
     }
     draw(context){
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
             this.x, this.y, this.sWidth, this.sHeight);
-        //Debug
+        //Debug gizmo
         // context.strokeStyle = "red";
         // context.strokeRect(this.x, this.y + this.sHeight / 3, this.sWidth, this.sHeight);
         
@@ -212,9 +228,11 @@ class Enemy{
 
         this.x -= this.speed; 
         if(this.x < 0  - this.sWidth){
+            
             this.markedForDeletion = true;
             score++;
         }
+        console.log(this.speed);
     }
 }
 
@@ -256,7 +274,7 @@ const background = new Background(mainCanvas.width, mainCanvas.height);
 let lastTime = 0;
 let enemyTimer = 0;
 let enemyInterval = 1000; //spawn interval in mseconds
-let randomEnemyInterval = Math.random() * 1000 + 1000;
+let randomEnemyInterval = Math.random() * (1500 - 200) + 200;
 
 function animate(timeStamp){
     const deltaTime = timeStamp - lastTime;

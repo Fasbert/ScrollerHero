@@ -4,13 +4,22 @@
 body{
     margin: 0;
     padding: 0;
-    background: #292929;
+    background: #2b1a0f;
 }
-#mainCanvas{
+
+.canvasContainer{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: rgb(212, 111, 16);
+    text-align: center;
+    text-transform: uppercase;
+    
+}
+#mainCanvas{
+
     border: 5px solid rgb(185, 100, 20);
     image-rendering: pixelated;
     image-rendering: crisp-edges;
