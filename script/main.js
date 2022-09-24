@@ -200,7 +200,7 @@ class Enemy{
         this.fps = 15;
         this.frameTimer = 0;
         this.frameInterval = 1000 / this.fps;
-        this.speed = Math.random() * (11 - 7) + 7;
+        this.speed = 8;
         this.markedForDeletion = false;
     }
     draw(context){
