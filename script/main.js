@@ -57,12 +57,10 @@ class Player{
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
             this.x, this.y, this.sWidth, this.sHeight);
         //Debug
-        context.strokeStyle = "green";
-        
-        //context.strokeRect(this.x, this.y, this.sWidth, this.sHeight);
-        context.beginPath();
-        context.arc(this.x + this.sWidth/2, this.y + this.sHeight/2, this.sWidth/2, 0 , Math.PI * 2);
-        context.stroke();
+        // context.strokeStyle = "green";
+        // context.beginPath();
+        // context.arc(this.x + this.sWidth/2, this.y + this.sHeight/2, this.sWidth/2, 0 , Math.PI * 2);
+        // context.stroke();
         
     }
     update(input, deltaTime, enemies){
@@ -193,8 +191,8 @@ class Enemy{
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
             this.x, this.y, this.sWidth, this.sHeight);
         //Debug
-        context.strokeStyle = "red";
-        context.strokeRect(this.x, this.y + this.sHeight / 3, this.sWidth, this.sHeight);
+        // context.strokeStyle = "red";
+        // context.strokeRect(this.x, this.y + this.sHeight / 3, this.sWidth, this.sHeight);
         
     }
     update(deltaTime){
