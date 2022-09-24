@@ -15,6 +15,9 @@ body{
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
+#bravo{
+    border: 5px solid rgb(185, 100, 20);
+}
 #playerImage, #backgroundImage, #boarImage, #goblinImage, #lumbertImage{
     display: none;
 }

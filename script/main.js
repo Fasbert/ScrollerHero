@@ -1,11 +1,12 @@
 window.addEventListener('load', function(){
-    const mainCanvas = this.document.getElementById('mainCanvas');
-    const ctx = mainCanvas.getContext('2d');
+    const mainCanvas = this.document.getElementById("mainCanvas");
+    const ctx = mainCanvas.getContext("2d");
     mainCanvas.width = 1280;
     mainCanvas.height = 720;
     let score = 0;
     let enemies = [];
-
+    let gameOver = false;
+    
 class InputHandler{
     constructor(){
         this.keys = [];
@@ -55,8 +56,25 @@ class Player{
         context.imageSmoothingEnabled = false;
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
             this.x, this.y, this.sWidth, this.sHeight);
+        //Debug
+        context.strokeStyle = "green";
+        
+        //context.strokeRect(this.x, this.y, this.sWidth, this.sHeight);
+        context.beginPath();
+        context.arc(this.x + this.sWidth/2, this.y + this.sHeight/2, this.sWidth/2, 0 , Math.PI * 2);
+        context.stroke();
+        
     }
-    update(input, deltaTime){
+    update(input, deltaTime, enemies){
+        //Collision detection 
+        enemies.forEach(enemy => {
+            const dx = (enemy.x + enemy.sWidth/2) - (this.x + this.sWidth/2);
+            const dy = (enemy.y + enemy.height/2) - (this.y + this.height/2);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if(distance < enemy.sWidth/2 + this.sWidth/2){
+                gameOver = true;
+            }
+        });
         //Animation
         if(this.frameTimer > this.frameInterval){
             if(this.frameX >= this.maxFrame){
@@ -174,6 +192,10 @@ class Enemy{
     draw(context){
         context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height, 
             this.x, this.y, this.sWidth, this.sHeight);
+        //Debug
+        context.strokeStyle = "red";
+        context.strokeRect(this.x, this.y + this.sHeight / 3, this.sWidth, this.sHeight);
+        
     }
     update(deltaTime){
         if(this.frameTimer > this.frameInterval){
@@ -216,10 +238,17 @@ function enemyHandler(deltaTime){
 }
 
 function displayStatusText(context){
-    context.globalAlpha = 0.55;
-    context.fillStyle = '#111111';
-    context.font = 'italic 24px Calibri';
-    context.fillText = ('Score: ' + score, 20, 50);
+    context.font = "40px Helvetica";
+    context.fillStyle = "#562B08";
+    context.fillText("Score: " + score, 40, 50);
+    context.fillStyle = "#FD841F";
+    context.fillText("Score: " + score, 38, 52);
+
+    if(gameOver){
+        context.textAlign = "center";
+        context.fillStyle = "#FD841F";
+        context.fillText("GAME OVER!", mainCanvas.width/2, mainCanvas.height/2);
+    }
 }
 
 const input = new InputHandler();
@@ -238,11 +267,18 @@ function animate(timeStamp){
     background.draw(ctx);
     background.update();
     player.draw(ctx);
-    player.update(input, deltaTime);
+    player.update(input, deltaTime, enemies);
     enemyHandler(deltaTime);
     displayStatusText(ctx);
-    requestAnimationFrame(animate);
+
+    if(!gameOver){
+        requestAnimationFrame(animate);
+    }
 }
 animate(0);
 
 });
+
+
+
+
