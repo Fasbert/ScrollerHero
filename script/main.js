@@ -8,8 +8,8 @@ window.addEventListener('load', function(){
     let gameOver = false;
 
     //Sounds
-    const jumpSound = new Audio('../sounds/8bit-jump.mp3');
-    const goSound = new Audio('../sounds/goSound.wav');
+    const jumpSound = this.document.getElementById('jumpSound');
+    const goSound = this.document.getElementById('goSound');
     const bgMusic = this.document.getElementById('bgMusic');
     bgMusic.volume = 0.5;
     
