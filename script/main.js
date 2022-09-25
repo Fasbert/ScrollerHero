@@ -5,6 +5,7 @@ window.addEventListener('load', function(){
     mainCanvas.height = 720;    
     let score = 0;
     let enemies = [];
+    let boarSpeed = 8;
     let gameOver = false;
 
     //Sounds
@@ -200,7 +201,7 @@ class Enemy{
         this.fps = 15;
         this.frameTimer = 0;
         this.frameInterval = 1000 / this.fps;
-        this.speed = 8;
+        this.speed = boarSpeed;
         this.markedForDeletion = false;
     }
     draw(context){
@@ -231,6 +232,7 @@ class Enemy{
             
             this.markedForDeletion = true;
             score++;
+            boarSpeed +=0.5;
         }
         console.log(this.speed);
     }
@@ -264,6 +266,8 @@ function displayStatusText(context){
         context.textAlign = "center";
         context.fillStyle = "#FD841F";
         context.fillText("GAME OVER!", mainCanvas.width/2, mainCanvas.height/2);
+        //hotfix
+        boarSpeed = 8;
     }
 }
 
